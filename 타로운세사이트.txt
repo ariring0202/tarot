@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>가을 타로 운세</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Gothic', 'Noto Sans KR', sans-serif;
+            background: linear-gradient(135deg, #8B4513 0%, #D2691E 50%, #CD853F 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        .leaf {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: linear-gradient(45deg, #ff6b35, #f7931e);
+            clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+            opacity: 0.7;
+            animation: fall linear infinite;
+        }
+
+        @keyframes fall {
+            0% {
+                transform: translateY(-100px) rotate(0deg);
+                opacity: 0.7;
+            }
+            100% {
+                transform: translateY(100vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header {
+            text-align: center;
+            color: #fff;
+            margin-bottom: 50px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header h1 {
+            font-size: 3em;
+            margin-bottom: 10px;
+            letter-spacing: 3px;
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .content-box {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            backdrop-filter: blur(10px);
+        }
+
+        .instruction {
+            text-align: center;
+            color: #8B4513;
+            font-size: 1.3em;
+            margin-bottom: 30px;
+            font-weight: bold;
+        }
+
+        .cards-container {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin: 40px 0;
+        }
+
+        .card {
+            width: 120px;
+            height: 180px;
+            background: linear-gradient(135deg, #4a0e0e, #8B4513);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .card::before {
+            content: '🍂';
+            font-size: 3em;
+            opacity: 0.3;
+        }
+
+        .card:hover {
+            transform: translateY(-10px) scale(1.05);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.4);
+        }
+
+        .card.selected {
+            animation: flip 0.6s ease;
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+        }
+
+        @keyframes flip {
+            0%, 100% { transform: rotateY(0deg); }
+            50% { transform: rotateY(180deg); }
+        }
+
+        .result {
+            display: none;
+            margin-top: 40px;
+            text-align: center;
+        }
+
+        .result.show {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .result h2 {
+            color: #8B4513;
+            font-size: 2em;
+            margin-bottom: 20px;
+        }
+
+        .result-card {
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            padding: 30px;
+            border-radius: 15px;
+            margin: 20px 0;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+        }
+
+        .result-card h3 {
+            color: #4a0e0e;
+            font-size: 1.8em;
+            margin-bottom: 15px;
+        }
+
+        .result-card p {
+            color: #333;
+            font-size: 1.1em;
+            line-height: 1.8;
+            white-space: pre-line;
+        }
+
+        .reset-btn {
+            background: linear-gradient(135deg, #8B4513, #D2691E);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.1em;
+            border-radius: 30px;
+            cursor: pointer;
+            margin-top: 30px;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .reset-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🍁 가을 타로 운세 🍁</h1>
+            <p>오늘의 운세를 확인해보세요</p>
+        </div>
+
+        <div class="content-box">
+            <div class="instruction">
+                마음을 가다듬고 카드 한 장을 선택해주세요
+            </div>
+
+            <div class="cards-container" id="cardsContainer">
+                <!-- 카드들이 여기에 생성됩니다 -->
+            </div>
+
+            <div class="result" id="result">
+                <h2>🔮 오늘의 운세 🔮</h2>
+                <div class="result-card">
+                    <h3 id="cardName"></h3>
+                    <p id="cardMeaning"></p>
+                </div>
+                <button class="reset-btn" onclick="resetTarot()">다시 뽑기</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const tarotCards = [
+            {
+                name: "광대 (The Fool)",
+                meaning: "새로운 시작의 기운이 가득합니다.\n오늘은 두려움 없이 새로운 도전을 해보세요.\n예상치 못한 행운이 찾아올 수 있습니다.\n자유롭고 창의적인 하루가 될 것입니다."
+            },
+            {
+                name: "마법사 (The Magician)",
+                meaning: "당신의 능력이 빛을 발하는 날입니다.\n자신감을 가지고 일을 추진하세요.\n원하는 것을 이룰 수 있는 힘이 있습니다.\n적극적으로 행동하면 좋은 결과가 있을 거예요."
+            },
+            {
+                name: "여교황 (The High Priestess)",
+                meaning: "직관을 믿고 따르세요.\n오늘은 내면의 목소리에 귀 기울이는 것이 중요합니다.\n조용히 명상하거나 사색하는 시간을 가져보세요.\n숨겨진 진실이 드러날 수 있습니다."
+            },
+            {
+                name: "여제 (The Empress)",
+                meaning: "풍요와 창조의 에너지가 넘칩니다.\n사랑하는 사람들과 따뜻한 시간을 보내세요.\n예술적 감각이 발휘되는 날입니다.\n주변을 아름답게 꾸미거나 맛있는 음식을 즐겨보세요."
+            },
+            {
+                name: "황제 (The Emperor)",
+                meaning: "리더십과 책임감이 요구되는 날입니다.\n계획을 세우고 체계적으로 일을 진행하세요.\n권위있는 사람의 도움을 받을 수 있습니다.\n자신의 원칙을 지키는 것이 중요합니다."
+            },
+            {
+                name: "교황 (The Hierophant)",
+                meaning: "전통과 지혜가 중요한 날입니다.\n선배나 스승의 조언에 귀 기울여보세요.\n배움의 기회가 찾아올 수 있습니다.\n규칙과 절차를 따르면 좋은 결과가 있을 거예요."
+            },
+            {
+                name: "연인 (The Lovers)",
+                meaning: "사랑과 관계에 집중하는 날입니다.\n중요한 선택의 기로에 설 수 있습니다.\n마음이 이끄는 대로 결정하세요.\n소중한 사람과의 유대가 깊어질 것입니다."
+            },
+            {
+                name: "전차 (The Chariot)",
+                meaning: "승리와 성공이 가까이 있습니다.\n목표를 향해 힘차게 전진하세요.\n자신감과 결단력이 중요합니다.\n장애물을 극복할 수 있는 힘이 있습니다."
+            },
+            {
+                name: "힘 (Strength)",
+                meaning: "내면의 용기와 인내심이 필요한 날입니다.\n부드러우면서도 강인한 태도를 유지하세요.\n어려운 상황도 침착하게 대처할 수 있습니다.\n자신에 대한 믿음을 가지세요."
+            },
+            {
+                name: "은둔자 (The Hermit)",
+                meaning: "혼자만의 시간이 필요한 날입니다.\n깊은 성찰과 자기 탐구의 시간을 가져보세요.\n내면의 지혜를 발견할 수 있습니다.\n조용한 곳에서 휴식을 취하는 것이 좋습니다."
+            },
+            {
+                name: "운명의 수레바퀴 (Wheel of Fortune)",
+                meaning: "변화와 전환의 시기입니다.\n행운이 찾아올 수 있으니 긍정적으로 생각하세요.\n삶의 순환을 받아들이세요.\n새로운 기회가 문을 두드리고 있습니다."
+            },
+            {
+                name: "정의 (Justice)",
+                meaning: "공정함과 균형이 중요한 날입니다.\n올바른 결정을 내릴 수 있는 지혜가 있습니다.\n과거의 행동에 대한 결과를 받게 될 수 있습니다.\n진실을 추구하고 정직하게 행동하세요."
+            },
+            {
+                name: "별 (The Star)",
+                meaning: "희망과 영감이 가득한 날입니다.\n꿈을 향해 나아갈 수 있는 용기를 얻을 것입니다.\n치유와 회복의 에너지가 있습니다.\n미래에 대한 긍정적인 비전을 그려보세요."
+            },
+            {
+                name: "태양 (The Sun)",
+                meaning: "기쁨과 성공이 넘치는 하루입니다.\n모든 일이 순조롭게 풀릴 것입니다.\n밝은 에너지로 주변을 환하게 비추세요.\n행복과 활력이 가득한 하루가 될 거예요."
+            },
+            {
+                name: "세계 (The World)",
+                meaning: "완성과 성취의 시간입니다.\n목표를 달성하고 새로운 단계로 나아갈 준비가 되었습니다.\n모든 것이 조화롭게 맞아떨어질 것입니다.\n축하와 기쁨을 만끽하세요."
+            }
+        ];
+
+        // 낙엽 생성
+        function createLeaves() {
+            for (let i = 0; i < 30; i++) {
+                const leaf = document.createElement('div');
+                leaf.className = 'leaf';
+                leaf.style.left = Math.random() * 100 + '%';
+                leaf.style.animationDuration = (Math.random() * 5 + 5) + 's';
+                leaf.style.animationDelay = Math.random() * 5 + 's';
+                
+                const colors = ['#ff6b35', '#f7931e', '#ff8c42', '#c1502e', '#ffb347'];
+                leaf.style.background = colors[Math.floor(Math.random() * colors.length)];
+                
+                document.body.appendChild(leaf);
+            }
+        }
+
+        // 카드 생성
+        function createCards() {
+            const container = document.getElementById('cardsContainer');
+            for (let i = 0; i < 5; i++) {
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.onclick = () => selectCard(i);
+                container.appendChild(card);
+            }
+        }
+
+        // 카드 선택
+        function selectCard(index) {
+            const cards = document.querySelectorAll('.card');
+            const selectedCard = cards[index];
+            
+            selectedCard.classList.add('selected');
+            
+            // 다른 카드들 비활성화
+            cards.forEach((card, i) => {
+                if (i !== index) {
+                    card.style.opacity = '0.3';
+                    card.style.pointerEvents = 'none';
+                }
+            });
+
+            // 랜덤으로 타로 카드 선택
+            setTimeout(() => {
+                const randomTarot = tarotCards[Math.floor(Math.random() * tarotCards.length)];
+                document.getElementById('cardName').textContent = randomTarot.name;
+                document.getElementById('cardMeaning').textContent = randomTarot.meaning;
+                document.getElementById('result').classList.add('show');
+            }, 800);
+        }
+
+        // 리셋
+        function resetTarot() {
+            document.getElementById('result').classList.remove('show');
+            const container = document.getElementById('cardsContainer');
+            container.innerHTML = '';
+            createCards();
+        }
+
+        // 초기화
+        createLeaves();
+        createCards();
+    </script>
+</body>
+</html>
